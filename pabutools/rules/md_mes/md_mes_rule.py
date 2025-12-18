@@ -324,5 +324,6 @@ def naive_md_mes(
                 voters[i].budget[dim] -= min(
                     voters[i].budget[dim], affordabilities_vectors[selected][dim] * voters[i].sat.sat_project(selected)
                 )
+
         del affordabilities_vectors[selected]
         del affordabilities_projections[selected]
