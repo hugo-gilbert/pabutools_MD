@@ -226,12 +226,16 @@ def projection_function_sum(affordability_vector: list[Numeric]) -> Numeric:
     """
     return sum(affordability_vector)
 
+def projection_function_l2(affordability_vector: list[Numeric]) -> Numeric:
+    return sum(x**2 for x in affordability_vector)**(1/2)
+
 def naive_md_mes(
     instance: MDInstance,
     profile: AbstractProfile,
     sat_class: type[SatisfactionMeasure],
     initial_budget_per_voter: list[Numeric],
-    projection_function: Callable[list[Numeric], Numeric]
+    projection_function: Callable[list[Numeric], Numeric],
+    sat_profile: SatisfactionProfile = None
 ) -> BudgetAllocation:
     """
     Naive implementation of the method of equal shares. Probably slow, but useful to test the
@@ -256,7 +260,9 @@ def naive_md_mes(
             All the projects selected by the method of equal shares.
 
     """
-    sat_profile = profile.as_sat_profile(sat_class)
+    if sat_profile == None:
+        sat_profile = profile.as_sat_profile(sat_class)
+
     voters = []
     
     #there may be a better way of doing this, should we store the dimension inside the MD-instance object directly?
