@@ -301,6 +301,7 @@ def naive_md_mes(
 
     remaining_projects = deepcopy(projects)
     while True:
+        print(len(remaining_projects))
         to_remove = set()
         for project in remaining_projects:
             if (

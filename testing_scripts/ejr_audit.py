@@ -2,9 +2,10 @@ import gurobipy as gp
 from gurobipy import GRB
 import sys
 import random
+import numpy as np
 
 # note: add this path properly and remove this.
-sys.path.append('/Users/bencookson/Documents/Shah/PB/pabutools_MD')
+sys.path.insert(0, '/Users/bencookson/Documents/Shah/PB/pabutools_MD')
 
 from pabutools.rules.md_mes.md_mes_rule import *
 from pabutools.election import *
@@ -100,7 +101,7 @@ def calculate_ejr_approximation_approval(votes, costs, budget, outcome_set, sat_
 
     y = m.addVars(num_projects, vtype=GRB.BINARY, name="y")
     x = m.addVars(num_voters, vtype=GRB.BINARY, name="x")
-    alpha = m.addVar(lb=1.0, vtype=GRB.CONTINUOUS, name="alpha")
+    alpha = m.addVar(lb=0.0, vtype=GRB.CONTINUOUS, name="alpha")
 
     # 1. Budget
     for d in range(dimension):
@@ -162,6 +163,27 @@ def generate_voter_profile(num_projects, approval_percentage):
         voter_profile = [1 if random.random() <= approval_percentage else 0 for _ in range(num_projects)]
     return voter_profile
 
+def ballot_to_vote_list(ballot, project_list):
+    vote_list = [0 for _ in project_list]
+    for p in range(len(project_list)):
+        if project_list[p] in ballot:
+            vote_list[p] = 1
+    return vote_list
+
+def generate_cardinal_normal_list_cost(project_list, variance_param=0.25):
+    util_map = {}
+    util_vector = []
+    for project in project_list:
+        util_val = int(max(1, np.random.normal(sum(project.costs), variance_param*sum(project.costs))))
+        util_vector.append(util_val)
+        util_map[project] = util_val
+    return util_map, util_vector
+
+def generate_approval_list_cost(project_list):
+    util_map = {project: 1 for project in project_list}
+    util_vector = [1 for _ in project_list]
+    return util_map, util_vector
+
 class RandomAdditiveSatGenerator:
     """
     A 'Functor' class used to inject dynamic, trial-specific satisfaction values
@@ -171,7 +193,7 @@ class RandomAdditiveSatGenerator:
     with a specific signature, but we need that function to know about the 
     random values generated for *this specific trial*.
     """
-    def __init__(self, project_values: dict[Project, Numeric]):
+    def __init__(self, project_values: dict[MDProject, Numeric]):
         # Store the dictionary mapping Project objects -> Satisfaction Scores
         self.project_values = project_values
 
@@ -179,7 +201,7 @@ class RandomAdditiveSatGenerator:
                  instance: Instance, 
                  profile: AbstractProfile, 
                  ballot: AbstractBallot, 
-                 project: Project, 
+                 project: MDProject, 
                  precomputed_values: dict) -> Numeric:
         # If the voter approved the project (it's in their ballot), return its assigned score.
         if project in ballot:
@@ -187,46 +209,27 @@ class RandomAdditiveSatGenerator:
         return 0
 
 if __name__ == "__main__":
-    # --- Simulation Parameters ---
-    dim = 5
-    trials = 100
-    ave_approx = 0
 
-    num_voters = 5
-    num_projects = 250
-    personal_budget = 10
-    budget = personal_budget * num_voters 
-    cost_range = [0, 25]
-    approval_percentage = 0.9  # x% chance to approve any given project
+    alpha_val = 0
+    trials = 1
 
-    for t in range(trials):
-        # 1. Generate Raw Data (Vectors of ints)
-        v_votes = [generate_voter_profile(num_projects, approval_percentage) for _ in range(num_voters)]
-        v_costs = [generate_cost_vector(dim, cost_range[0], cost_range[1]) for _ in range(num_projects)]
-        v_sat_scores = [random.randint(1, 5) for _ in range(num_projects)]
+    for _ in range(trials):
 
-        # 2. Create Pabutools Objects
-        # Convert raw costs into MDProject objects
-        project_list = [MDProject(f"p{j}", dim, v_costs[j]) for j in range(num_projects)]
+        from pabutools.election.md_pabulib import md_parse_pabulib
 
-        # Map the Project objects to this trial's random satisfaction scores
-        project_sat_dict = {project_list[j]: v_sat_scores[j] for j in range(num_projects)}
-        
-        # Instantiate our custom satisfaction generator with this trial's data
-        sat_func = RandomAdditiveSatGenerator(project_sat_dict)
+        filename = "/Users/bencookson/Downloads/poland_warszawa_2018_chrzanow-jelonki-polnocne-jelonki-poludniowe.pb"
 
-        # Create the Instance and populate it
-        instance = MDInstance()
-        for x in project_list:
-            instance.add(x)
-        instance.budget_limits = [budget for _ in range(dim)]
-        
-        # 3. Create Ballots and Profile
-        ballot_list = []
-        for i in range(num_voters):
-            i_approvals = [p for bit, p in zip(v_votes[i], project_list) if bit == 1]
-            ballot_list.append(ApprovalBallot(i_approvals))
-        profile = ApprovalProfile(ballot_list)
+        instance, profile = md_parse_pabulib(filename)
+
+        project_list = [project for project in instance]
+        # util_map, util_vector = generate_cardinal_normal_list_cost(project_list)
+        util_map, util_vector = generate_approval_list_cost(project_list)
+        sat_func = RandomAdditiveSatGenerator(util_map)
+
+        dim = len(instance.budget_limits)
+
+        budget = instance.budget_limits[0]
+        personal_budget = instance.budget_limits[0]/profile.num_ballots()
 
         # 4. Construct Custom Satisfaction Profile
         # We manually create the list of AdditiveSatisfaction objects here.
@@ -244,7 +247,9 @@ if __name__ == "__main__":
         # Initialize SatisfactionProfile with the pre-built list.
         sat_profile = SatisfactionProfile(init=sat_measures_list, instance=instance)
         sat_profile.sat_class = AdditiveSatisfaction
-        
+
+        print(sat_profile[0].func.project_values)
+
         # 5. Run the Voting Rule (Method of Equal Shares - Multi-Dimensional)
         outcome = naive_md_mes(
             instance, 
@@ -254,30 +259,133 @@ if __name__ == "__main__":
             projection_function_max, 
             sat_profile
         )
-        
+
+        # outcome = naive_md_mes(
+        #         instance, 
+        #         profile, 
+        #         Cardinality_Sat, 
+        #         [personal_budget for _ in range(dim)], 
+        #         projection_function_max
+        #     )
+
         # 6. Convert Outcome to Binary Vector for Analysis
         v_outcome = []
-        for j in range(num_projects):
+        for j in range(len(project_list)):
             if project_list[j] in outcome:
                 v_outcome.append(1)
             else:
                 v_outcome.append(0)
-        
+
+        v_votes = [ballot_to_vote_list(ballot,project_list) for ballot in profile]
+
+        v_costs = [p.costs for p in project_list]
+
+
         # 7. Calculate EJR Approximation (Using the ILP defined previously)
         approx, T, S = calculate_ejr_approximation_approval(
-            v_votes, v_costs, budget, v_outcome, sat_values=v_sat_scores
+            v_votes, v_costs, budget, v_outcome, sat_values=util_vector
         )
+
+        print(outcome)
+        print(approx)
+        print(S)
+        print(T)
+
+        alpha_val += approx
+
+    print(alpha_val/trials)
+
+    # # --- Simulation Parameters ---
+    # dim = 5
+    # trials = 100
+    # ave_approx = 0
+
+    # num_voters = 5
+    # num_projects = 250
+    # personal_budget = 10
+    # budget = personal_budget * num_voters 
+    # cost_range = [0, 25]
+    # approval_percentage = 0.9  # x% chance to approve any given project
+
+    # for t in range(trials):
+    #     # 1. Generate Raw Data (Vectors of ints)
+    #     v_votes = [generate_voter_profile(num_projects, approval_percentage) for _ in range(num_voters)]
+    #     v_costs = [generate_cost_vector(dim, cost_range[0], cost_range[1]) for _ in range(num_projects)]
+    #     v_sat_scores = [random.randint(1, 5) for _ in range(num_projects)]
+
+    #     # 2. Create Pabutools Objects
+    #     # Convert raw costs into MDProject objects
+    #     project_list = [MDProject(f"p{j}", dim, v_costs[j]) for j in range(num_projects)]
+
+    #     # Map the Project objects to this trial's random satisfaction scores
+    #     project_sat_dict = {project_list[j]: v_sat_scores[j] for j in range(num_projects)}
         
-        print(f"Trial {t}: Approx = {approx}")
-        ave_approx += approx
+    #     # Instantiate our custom satisfaction generator with this trial's data
+    #     sat_func = RandomAdditiveSatGenerator(project_sat_dict)
+
+    #     # Create the Instance and populate it
+    #     instance = MDInstance()
+    #     for x in project_list:
+    #         instance.add(x)
+    #     instance.budget_limits = [budget for _ in range(dim)]
         
-        # Break if we hit the "Infinite Deviation" flag (9999)
-        if approx > 9000:
-            print("UNBOUNDED ERROR: BREAKING")
-            break
+    #     # 3. Create Ballots and Profile
+    #     ballot_list = []
+    #     for i in range(num_voters):
+    #         i_approvals = [p for bit, p in zip(v_votes[i], project_list) if bit == 1]
+    #         ballot_list.append(ApprovalBallot(i_approvals))
+    #     profile = ApprovalProfile(ballot_list)
+
+    #     # 4. Construct Custom Satisfaction Profile
+    #     # We manually create the list of AdditiveSatisfaction objects here.
+    #     # This is the only way to pass our custom 'sat_func' (the evaluator) into them.
+    #     sat_measures_list = [
+    #         AdditiveSatisfaction(
+    #             instance=instance, 
+    #             profile=profile, 
+    #             ballot=ballot, 
+    #             func=sat_func  # Injecting the functor
+    #         )
+    #         for ballot in profile
+    #     ]
+
+    #     # Initialize SatisfactionProfile with the pre-built list.
+    #     sat_profile = SatisfactionProfile(init=sat_measures_list, instance=instance)
+    #     sat_profile.sat_class = AdditiveSatisfaction
+        
+    #     # 5. Run the Voting Rule (Method of Equal Shares - Multi-Dimensional)
+    #     outcome = naive_md_mes(
+    #         instance, 
+    #         profile, 
+    #         Cardinality_Sat, 
+    #         [personal_budget for _ in range(dim)], 
+    #         projection_function_max, 
+    #         sat_profile
+    #     )
+        
+    #     # 6. Convert Outcome to Binary Vector for Analysis
+    #     v_outcome = []
+    #     for j in range(num_projects):
+    #         if project_list[j] in outcome:
+    #             v_outcome.append(1)
+    #         else:
+    #             v_outcome.append(0)
+        
+    #     # 7. Calculate EJR Approximation (Using the ILP defined previously)
+    #     approx, T, S = calculate_ejr_approximation_approval(
+    #         v_votes, v_costs, budget, v_outcome, sat_values=v_sat_scores
+    #     )
+        
+    #     print(f"Trial {t}: Approx = {approx}")
+    #     ave_approx += approx
+        
+    #     # Break if we hit the "Infinite Deviation" flag (9999)
+    #     if approx > 9000:
+    #         print("UNBOUNDED ERROR: BREAKING")
+    #         break
     
-    # 8. Print Average Approximation Ratio
-    print(f"Average Approximation: {ave_approx/trials}")
+    # # 8. Print Average Approximation Ratio
+    # print(f"Average Approximation: {ave_approx/trials}")
         
     # --- Manual Test Case ---
     # print("\n--- Running Manual Test Case ---")
