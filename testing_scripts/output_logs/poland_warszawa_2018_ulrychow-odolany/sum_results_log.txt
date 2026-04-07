@@ -1,0 +1,52 @@
+========================================================================
+RESULTS LOG  [sum]
+Generated: 2026-04-06T23:14:46.592997
+========================================================================
+
+--- Selected Projects (MES Outcome) ---
+  Count: 6 / 26
+
+  • 396
+    Categories : public space, urban greenery
+    Cost vector: [0, 0, 0, 0, mpfr('19348.901213899084'), 0, 0, mpfr('5651.0987861009162')]
+    % of budget: [0.0%, 0.0%, 0.0%, 0.0%, 14.9%, 0.0%, 0.0%, 4.4%]
+  • 1523
+    Categories : education, environmental protection, urban greenery
+    Cost vector: [0, mpfr('4407.225018745532'), mpfr('470.88673943824767'), 0, 0, 0, 0, mpfr('121.88824181622037')]
+    % of budget: [0.0%, 3.4%, 0.4%, 0.0%, 0.0%, 0.0%, 0.0%, 0.1%]
+  • 1717
+    Categories : environmental protection, health, urban greenery
+    Cost vector: [0, 0, mpfr('1936.373939420447'), mpfr('9021.5159295787016'), 0, 0, 0, mpfr('13372.110131000851')]
+    % of budget: [0.0%, 0.0%, 1.5%, 7.0%, 0.0%, 0.0%, 0.0%, 10.3%]
+  • 2361
+    Categories : environmental protection, public space, urban greenery
+    Cost vector: [0, 0, mpfr('33490.146887575531'), 0, mpfr('1096.6825446104372'), 0, 0, mpfr('9413.1705678140315')]
+    % of budget: [0.0%, 0.0%, 25.8%, 0.0%, 0.8%, 0.0%, 0.0%, 7.3%]
+  • 398
+    Categories : public space
+    Cost vector: [0, 0, 0, 0, mpfr('53036.0'), 0, 0, 0]
+    % of budget: [0.0%, 0.0%, 0.0%, 0.0%, 40.9%, 0.0%, 0.0%, 0.0%]
+  • 243
+    Categories : public space, public transit and roads
+    Cost vector: [0, 0, 0, 0, mpfr('2615.6591019733623'), mpfr('384.3408980266376'), 0, 0]
+    % of budget: [0.0%, 0.0%, 0.0%, 0.0%, 2.0%, 0.3%, 0.0%, 0.0%]
+
+--- Total Cost of Selected Bundle (per dimension) ---
+  Dim 0 (culture): 0.0000 / 129672.7500  (0.0% used)
+  Dim 1 (education): 4407.2250 / 129672.7500  (3.4% used)
+  Dim 2 (environmental protection): 35897.4076 / 129672.7500  (27.7% used)
+  Dim 3 (health): 9021.5159 / 129672.7500  (7.0% used)
+  Dim 4 (public space): 76097.2429 / 129672.7500  (58.7% used)
+  Dim 5 (public transit and roads): 384.3409 / 129672.7500  (0.3% used)
+  Dim 6 (sport): 0.0000 / 129672.7500  (0.0% used)
+  Dim 7 (urban greenery): 28558.2677 / 129672.7500  (22.0% used)
+
+--- EJR Audit ---
+  Alpha (max improvement factor): 1.000000
+  Interpretation: Outcome satisfies EJR (alpha <= 1).
+
+  Deviating coalition (voter indices): [9, 43, 70, 83, 91, 98, 99, 107, 133, 145, 158, 175, 176, 202, 213, 220, 258, 318, 326, 336, 387, 401, 426, 462, 512, 564, 723, 822, 824, 875, 908, 1160, 1161, 1215, 1280, 1290, 1298, 1304, 1313, 1324, 1368, 1409, 1528, 1569, 1584, 1586, 1605, 1606, 1620, 1637, 1752, 1797, 1887, 1890, 1928, 1990, 2163, 2195, 2196, 2197, 2219, 2253, 2270, 2284, 2294, 2310, 2411, 2522, 2573, 2576, 2600, 2606, 2611, 2772]
+  Deviating bundle (project indices) : [21]
+  Deviating bundle (project names)   : ['243']
+
+  Wall-clock time: 13.95s

@@ -1,8 +1,10 @@
 """
 Multidimensional Tools to work with PaBuLib.
+Random simplex split variant: each project's cost is randomly distributed
+across ALL of its categories (not just the first one).
 """
 
-from natsort import natsorted
+import numpy as np
 from copy import deepcopy
 
 from pabutools.fractions import str_as_frac
@@ -12,54 +14,89 @@ from pabutools.election.ballot import (
     CardinalBallot,
     OrdinalBallot,
     CumulativeBallot,
-    AbstractCardinalBallot,
 )
 from pabutools.election.profile import (
-    AbstractProfile,
     Profile,
     ApprovalProfile,
-    AbstractApprovalProfile,
     CardinalProfile,
-    AbstractCardinalProfile,
     CumulativeProfile,
-    AbstractCumulativeProfile,
     OrdinalProfile,
-    AbstractOrdinalProfile,
 )
 
-import urllib.request
 import csv
 import os
 
-def get_category_count(file_content: str) -> list:
+
+def _sample_simplex(n, rng=None):
+    """
+    Sample a point uniformly at random from the (n-1)-dimensional simplex.
+    Uses the sorted-uniforms method: draw n-1 uniforms, sort them, and take
+    consecutive differences.
+
+    Returns a numpy array of length n that sums to 1.
+    """
+    if rng is None:
+        rng = np.random.default_rng()
+    if n == 1:
+        return np.array([1.0])
+    cuts = np.sort(rng.uniform(size=n - 1))
+    return np.diff(np.concatenate(([0.0], cuts, [1.0])))
+
+
+def get_all_categories(file_content: str) -> list:
+    """
+    Collect every unique category mentioned by any project,
+    across ALL of a project's listed categories (not just the first).
+    """
     lines = file_content.splitlines()
     section = ""
     header = []
     reader = csv.reader(lines, delimiter=";")
-    category_list = set()
+    category_set = set()
     for row in reader:
         if len(row) == 0 or (len(row) == 1 and len(row[0].strip()) == 0):
             continue
         if str(row[0]).strip().lower() in ["meta", "projects", "votes"]:
             section = str(row[0]).strip().lower()
             header = next(reader)
-        elif section == "meta":
-            continue
         elif section == "projects":
             for i in range(len(row)):
                 key = header[i].strip()
-                if row[i].strip().lower() != "none":
-                    if key in ["category"]:
-                        category_list.add(row[i].strip().split(",")[0])
-    return list(category_list)
+                if row[i].strip().lower() != "none" and key in ["category", "categories"]:
+                    for cat in row[i].split(","):
+                        cat = cat.strip()
+                        if cat:
+                            category_set.add(cat)
+    return sorted(category_set)  # sorted for deterministic dimension ordering
 
-def md_parse_pabulib_from_string(file_content: str) -> tuple[MDInstance, Profile]:
+
+def md_parse_pabulib_from_string_random_split(
+    file_content: str,
+    seed: int | None = None,
+) -> tuple[MDInstance, Profile]:
+    """
+    Parse a PaBuLib file into a multidimensional instance where:
+      - d = number of unique categories across ALL projects (using every
+        listed category, not just the first).
+      - Each project's cost is randomly split among its categories by
+        sampling uniformly from the simplex.
+
+    Parameters
+    ----------
+    file_content : str
+        The raw text of a PaBuLib .pb file.
+    seed : int | None
+        Optional RNG seed for reproducibility of the random cost splits.
+    """
+    rng = np.random.default_rng(seed)
+
     instance = MDInstance()
     ballots = []
     optional_sets = {"categories": set(), "targets": set()}
 
-    category_list = get_category_count(file_content)
+    category_list = get_all_categories(file_content)
     category_count = len(category_list)
+    cat_to_idx = {cat: idx for idx, cat in enumerate(category_list)}
 
     lines = file_content.splitlines()
     section = ""
@@ -81,11 +118,15 @@ def md_parse_pabulib_from_string(file_content: str) -> tuple[MDInstance, Profile
                 p.name = row[0].strip()
                 if row[i].strip().lower() != "none":
                     if key in ["category", "categories"]:
-                        project_meta["categories"] = {
-                            row[i].split(",")[0] #Limit each project to having a single category
+                        # Keep ALL categories for this project
+                        project_cats = {
+                            entry.strip()
+                            for entry in row[i].split(",")
+                            if entry.strip()
                         }
-                        p.categories = set(project_meta["categories"])
-                        optional_sets["categories"].update(project_meta["categories"])
+                        project_meta["categories"] = project_cats
+                        p.categories = set(project_cats)
+                        optional_sets["categories"].update(project_cats)
                     elif key in ["target", "targets"]:
                         project_meta["targets"] = {
                             entry.strip() for entry in row[i].split(",")
@@ -94,12 +135,23 @@ def md_parse_pabulib_from_string(file_content: str) -> tuple[MDInstance, Profile
                         optional_sets["targets"].update(project_meta["targets"])
                     else:
                         project_meta[key] = row[i].strip()
+
+            total_cost = str_as_frac(project_meta["cost"].replace(",", "."))
+            project_cats = list(project_meta["categories"])
+            n_cats = len(project_cats)
+
+            # Sample a random split on the (n_cats - 1)-simplex
+            fractions = _sample_simplex(n_cats, rng)
+
             cost_vec = [0 for _ in category_list]
-            cost_vec[category_list.index(list(project_meta["categories"])[0])] = str_as_frac(project_meta["cost"].replace(",", "."))
+            for j, cat in enumerate(project_cats):
+                cost_vec[cat_to_idx[cat]] = total_cost * fractions[j]
+
             p.costs = cost_vec
             p.dimension = len(cost_vec)
             instance.add(p)
             instance.project_meta[p] = project_meta
+
         elif section == "votes":
             ballot_meta = dict()
             for i in range(len(row)):
@@ -117,7 +169,7 @@ def md_parse_pabulib_from_string(file_content: str) -> tuple[MDInstance, Profile
                     ballot = CardinalBallot()
                 else:
                     ballot = CumulativeBallot()
-                if "points" in ballot_meta:  # if not, the ballot should be empty
+                if "points" in ballot_meta:
                     points = ballot_meta["points"].split(",")
                     for index, project_name in enumerate(
                         ballot_meta["vote"].split(",")
@@ -142,10 +194,14 @@ def md_parse_pabulib_from_string(file_content: str) -> tuple[MDInstance, Profile
             ballot.meta = ballot_meta
             ballots.append(ballot)
 
-    # We retrieve the budget limit from the meta information
-    budget_vec = [str_as_frac(instance.meta["budget"].replace(",", "."))/category_count for _ in category_list]
+    # Budget: split total budget evenly across dimensions
+    budget_vec = [
+        str_as_frac(instance.meta["budget"].replace(",", ".")) / category_count
+        for _ in category_list
+    ]
     instance.budget_limits = budget_vec
 
+    # --- Legal ballot constraints (unchanged from original) ---
     legal_min_length = instance.meta.get("min_length", None)
     if legal_min_length is not None:
         legal_min_length = int(legal_min_length)
@@ -219,30 +275,35 @@ def md_parse_pabulib_from_string(file_content: str) -> tuple[MDInstance, Profile
             legal_max_length=legal_max_length,
         )
 
-    # We add the category and target information that we collected from the projects
     instance.categories = optional_sets["categories"]
     instance.targets = optional_sets["targets"]
 
     return instance, profile
 
-def md_parse_pabulib(file_path: str) -> tuple[MDInstance, Profile]:
+
+def md_parse_pabulib_random_split(
+    file_path: str,
+    seed: int | None = None,
+) -> tuple[MDInstance, Profile]:
     """
-    Parses a PaBuLib files and returns the corresponding instance and profile. The returned profile will be of the
-    correct type depending on the metadata in the file.
+    Parses a PaBuLib file into a multidimensional instance with random
+    simplex cost splits across all of each project's categories.
 
     Parameters
     ----------
-        file_path : str
-            Path to the PaBuLib file to be parsed.
+    file_path : str
+        Path to the PaBuLib file.
+    seed : int | None
+        Optional RNG seed for reproducibility.
 
     Returns
     -------
-        tuple[:py:class:`~pabutools.election.instance.Instance`, :py:class:`~pabutools.election.profile.profile.Profile`]
-            The instance and the profile corresponding to the file.
+    tuple[MDInstance, Profile]
     """
-
     with open(file_path, "r", newline="", encoding="utf-8-sig") as csvfile:
-        instance, profile = md_parse_pabulib_from_string(csvfile.read())
+        instance, profile = md_parse_pabulib_from_string_random_split(
+            csvfile.read(), seed=seed
+        )
 
     instance.file_path = file_path
     instance.file_name = os.path.basename(file_path)

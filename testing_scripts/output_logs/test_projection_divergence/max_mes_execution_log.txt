@@ -1,0 +1,105 @@
+================================================================================
+MES DETAILED EXECUTION LOG
+Generated: 2026-04-06T23:14:46.604705
+================================================================================
+
+Dimensions          : 3
+Number of voters    : 1
+Number of projects  : 4
+Initial voter budget: [10.0000, 10.0000, 10.0000]
+
+--------------------------------------------------------------------------------
+PROJECT SUMMARY
+--------------------------------------------------------------------------------
+  1
+    Costs       : [10.0000, 0.0000, 0.0000]
+    Supporters  : 1  (indices: [0])
+    Total sat   : 5.0000
+    Sat detail  : v0=5.00
+
+  2
+    Costs       : [4.3888, 2.2604, 3.3508]
+    Supporters  : 1  (indices: [0])
+    Total sat   : 11.0000
+    Sat detail  : v0=11.00
+
+  3
+    Costs       : [0.0000, 10.0000, 0.0000]
+    Supporters  : 1  (indices: [0])
+    Total sat   : 9.0000
+    Sat detail  : v0=9.00
+
+  4
+    Costs       : [0.0000, 0.0000, 10.0000]
+    Supporters  : 1  (indices: [0])
+    Total sat   : 12.0000
+    Sat detail  : v0=12.00
+
+--------------------------------------------------------------------------------
+VOTER SUMMARY
+--------------------------------------------------------------------------------
+  Voter 0
+    Budget      : [10.0000, 10.0000, 10.0000]
+    Multiplicity: 1
+    Approves    : ['1', '2', '3', '4']
+
+
+================================================================================
+ITERATION 1
+Remaining projects: 4
+================================================================================
+  No projects removed for being unaffordable.
+
+  --- Affordability Table ---
+  Project                                  Vector                                     Projection
+  --------------------------------------------------------------------------------------------
+  2                                        [0.398980, 0.205495, 0.304616]               0.398980
+  4                                        [0.000000, 0.000000, 0.833333]               0.833333
+  3                                        [0.000000, 1.111111, 0.000000]               1.111111
+  1                                        [2.000000, 0.000000, 0.000000]               2.000000
+
+  >>> SELECTED: 2
+      Affordability vector    : [0.398980, 0.205495, 0.304616]
+      Affordability projection: 0.398980
+      Cost vector             : [4.3888, 2.2604, 3.3508]
+
+  --- Budget Updates for Supporters ---
+  Voter       Sat  Dim       Before      Payment        After
+  ------------------------------------------------------------
+  v0       11.00    0      10.0000       4.3888       5.6112
+  v0       11.00    1      10.0000       2.2604       7.7396
+  v0       11.00    2      10.0000       3.3508       6.6492
+
+  --- Post-Iteration Budget Snapshot ---
+  Voter 0: [5.6112, 7.7396, 6.6492]  (total: 20.0000)
+
+================================================================================
+ITERATION 2
+Remaining projects: 3
+================================================================================
+
+  --- Removed 3 unaffordable project(s) ---
+  1:
+    Dim 0: supporter budget = 5.6112, cost = 10.0000, shortfall = 4.3888
+    Dim 1: supporter budget = 7.7396, cost = 0.0000, shortfall = -7.7396
+    Dim 2: supporter budget = 6.6492, cost = 0.0000, shortfall = -6.6492
+  3:
+    Dim 0: supporter budget = 5.6112, cost = 0.0000, shortfall = -5.6112
+    Dim 1: supporter budget = 7.7396, cost = 10.0000, shortfall = 2.2604
+    Dim 2: supporter budget = 6.6492, cost = 0.0000, shortfall = -6.6492
+  4:
+    Dim 0: supporter budget = 5.6112, cost = 0.0000, shortfall = -5.6112
+    Dim 1: supporter budget = 7.7396, cost = 0.0000, shortfall = -7.7396
+    Dim 2: supporter budget = 6.6492, cost = 10.0000, shortfall = 3.3508
+
+  --- Affordability Table ---
+  Project                                  Vector                                     Projection
+  --------------------------------------------------------------------------------------------
+
+================================================================================
+FINAL RESULT
+================================================================================
+  Selected 1 project(s):
+    1. 2
+
+END OF LOG

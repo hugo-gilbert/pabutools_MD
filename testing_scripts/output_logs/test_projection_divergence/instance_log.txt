@@ -1,0 +1,59 @@
+========================================================================
+ELECTION INSTANCE LOG
+Generated: 2026-04-06T23:14:46.604505
+========================================================================
+
+--- Meta ---
+  description: Engineered instance to produce different MES outcomes under max vs sum projection. P2 (3-category hub) wins under max due to low max-dimension cost (43.9 vs 100). P3/P4 are cheap per-supporter and selected first under sum
+  country: Testland
+  unit: Divergence City
+  instance: 2025
+  num_projects: 4
+  num_votes: 10
+  budget: 30
+  vote_type: approval
+  rule: mes
+  min_length: 1
+  max_sum_cost: 300
+
+--- Dimension → Category Mapping ---
+  Dimension 0: green
+  Dimension 1: mobility
+  Dimension 2: social
+  Total dimensions: 3
+
+--- Budget Limits (per dimension) ---
+  Dimension 0 (green): 10
+  Dimension 1 (mobility): 10
+  Dimension 2 (social): 10
+
+--- Projects ---
+  Total: 4
+
+  [0] 4
+       Categories : social
+       Cost vector: [0, 0, mpfr('10.0')]
+       % of budget: [0.0%, 0.0%, 100.0%]
+       Sat value  : 12
+
+  [1] 2
+       Categories : green, mobility, social
+       Cost vector: [mpfr('4.3887843975205234'), mpfr('2.2604395144403666'), mpfr('3.35077608803911')]
+       % of budget: [43.9%, 22.6%, 33.5%]
+       Sat value  : 11
+
+  [2] 3
+       Categories : mobility
+       Cost vector: [0, mpfr('10.0'), 0]
+       % of budget: [0.0%, 100.0%, 0.0%]
+       Sat value  : 9
+
+  [3] 1
+       Categories : green
+       Cost vector: [mpfr('10.0'), 0, 0]
+       % of budget: [100.0%, 0.0%, 0.0%]
+       Sat value  : 5
+
+--- Voter Profile ---
+  Number of ballots: 1
+  Vote type        : approval

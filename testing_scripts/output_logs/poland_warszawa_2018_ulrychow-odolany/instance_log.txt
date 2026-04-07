@@ -1,0 +1,208 @@
+========================================================================
+ELECTION INSTANCE LOG
+Generated: 2026-04-06T23:14:16.827080
+========================================================================
+
+--- Meta ---
+  description: Local PB in Warszawa, Wola | Ulrychów + Odolany
+  country: Poland
+  unit: Warszawa
+  district: Wola
+  subunit: Ulrychów + Odolany
+  instance: 2018
+  num_projects: 26
+  num_votes: 2777
+  budget: 1037382
+  vote_type: approval
+  rule: greedy
+  date_begin: 14.06.2017
+  date_end: 30.06.2017
+  min_length: 1
+  max_sum_cost: 1037382
+  edition: 4
+  language: pl
+  currency: PLN
+
+--- Dimension → Category Mapping ---
+  Dimension 0: culture
+  Dimension 1: education
+  Dimension 2: environmental protection
+  Dimension 3: health
+  Dimension 4: public space
+  Dimension 5: public transit and roads
+  Dimension 6: sport
+  Dimension 7: urban greenery
+  Total dimensions: 8
+
+--- Budget Limits (per dimension) ---
+  Dimension 0 (culture): 518691/4
+  Dimension 1 (education): 518691/4
+  Dimension 2 (environmental protection): 518691/4
+  Dimension 3 (health): 518691/4
+  Dimension 4 (public space): 518691/4
+  Dimension 5 (public transit and roads): 518691/4
+  Dimension 6 (sport): 518691/4
+  Dimension 7 (urban greenery): 518691/4
+
+--- Projects ---
+  Total: 26
+
+  [0] 2107
+       Categories : public space, urban greenery
+       Cost vector: [0, 0, 0, 0, mpfr('25458.74298703736'), 0, 0, mpfr('105341.25701296264')]
+       % of budget: [0.0%, 0.0%, 0.0%, 0.0%, 19.6%, 0.0%, 0.0%, 81.2%]
+       Sat value  : 104212
+
+  [1] 762
+       Categories : public transit and roads
+       Cost vector: [0, 0, 0, 0, 0, mpfr('178000.0'), 0, 0]
+       % of budget: [0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 137.3%, 0.0%, 0.0%]
+       Sat value  : 194061
+
+  [2] 863
+       Categories : public space, public transit and roads
+       Cost vector: [0, 0, 0, 0, mpfr('134999.88607443083'), mpfr('107550.11392556917'), 0, 0]
+       % of budget: [0.0%, 0.0%, 0.0%, 0.0%, 104.1%, 82.9%, 0.0%, 0.0%]
+       Sat value  : 264865
+
+  [3] 2331
+       Categories : environmental protection, public space, urban greenery
+       Cost vector: [0, 0, mpfr('43887.843975205229'), 0, mpfr('41971.948015933012'), 0, 0, mpfr('14140.208008861755')]
+       % of budget: [0.0%, 0.0%, 33.8%, 0.0%, 32.4%, 0.0%, 0.0%, 10.9%]
+       Sat value  : 91007
+
+  [4] 2544
+       Categories : public space
+       Cost vector: [0, 0, 0, 0, mpfr('30620.0'), 0, 0, 0]
+       % of budget: [0.0%, 0.0%, 0.0%, 0.0%, 23.6%, 0.0%, 0.0%, 0.0%]
+       Sat value  : 25525
+
+  [5] 2546
+       Categories : environmental protection, public space
+       Cost vector: [0, 0, mpfr('354707.96283254598'), 0, mpfr('405292.03716745402'), 0, 0, 0]
+       % of budget: [0.0%, 0.0%, 273.5%, 0.0%, 312.5%, 0.0%, 0.0%, 0.0%]
+       Sat value  : 933242
+
+  [6] 2087
+       Categories : health, public space
+       Cost vector: [0, 0, 0, mpfr('174342.00726484097'), mpfr('75657.99273515903'), 0, 0, 0]
+       % of budget: [0.0%, 0.0%, 0.0%, 134.4%, 58.3%, 0.0%, 0.0%, 0.0%]
+       Sat value  : 323482
+
+  [7] 396
+       Categories : public space, urban greenery
+       Cost vector: [0, 0, 0, 0, mpfr('19348.901213899084'), 0, 0, mpfr('5651.0987861009162')]
+       % of budget: [0.0%, 0.0%, 0.0%, 0.0%, 14.9%, 0.0%, 0.0%, 4.4%]
+       Sat value  : 21898
+
+  [8] 734
+       Categories : public transit and roads
+       Cost vector: [0, 0, 0, 0, 0, mpfr('45000.0'), 0, 0]
+       % of budget: [0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 34.7%, 0.0%, 0.0%]
+       Sat value  : 40384
+
+  [9] 1523
+       Categories : education, environmental protection, urban greenery
+       Cost vector: [0, mpfr('4407.225018745532'), mpfr('470.88673943824767'), 0, 0, 0, 0, mpfr('121.88824181622037')]
+       % of budget: [0.0%, 3.4%, 0.4%, 0.0%, 0.0%, 0.0%, 0.0%, 0.1%]
+       Sat value  : 5536
+
+  [10] 246
+       Categories : public space, public transit and roads
+       Cost vector: [0, 0, 0, 0, mpfr('45183.182230909217'), mpfr('24816.817769090787'), 0, 0]
+       % of budget: [0.0%, 0.0%, 0.0%, 0.0%, 34.8%, 19.1%, 0.0%, 0.0%]
+       Sat value  : 62225
+
+  [11] 524
+       Categories : education, health, sport
+       Cost vector: [0, mpfr('28940.726222445472'), 0, mpfr('106056.45261259469'), 0, 0, mpfr('32902.821164959845'), 0]
+       % of budget: [0.0%, 22.3%, 0.0%, 81.8%, 0.0%, 0.0%, 25.4%, 0.0%]
+       Sat value  : 151658
+
+  [12] 400
+       Categories : public transit and roads
+       Cost vector: [0, 0, 0, 0, 0, mpfr('51000.0'), 0, 0]
+       % of budget: [0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 39.3%, 0.0%, 0.0%]
+       Sat value  : 84272
+
+  [13] 577
+       Categories : education, health
+       Cost vector: [0, mpfr('12722.165748910191'), 0, mpfr('39867.834251089807'), 0, 0, 0, 0]
+       % of budget: [0.0%, 9.8%, 0.0%, 30.7%, 0.0%, 0.0%, 0.0%, 0.0%]
+       Sat value  : 48492
+
+  [14] 261
+       Categories : public space, sport, urban greenery
+       Cost vector: [0, 0, 0, 0, mpfr('55715.52383914512'), 0, mpfr('200525.35299792216'), mpfr('55199.123162932716')]
+       % of budget: [0.0%, 0.0%, 0.0%, 0.0%, 43.0%, 0.0%, 154.6%, 42.6%]
+       Sat value  : 324670
+
+  [15] 2291
+       Categories : public space, public transit and roads
+       Cost vector: [0, 0, 0, 0, mpfr('9669.6519496819219'), mpfr('320330.34805031808'), 0, 0]
+       % of budget: [0.0%, 0.0%, 0.0%, 0.0%, 7.5%, 247.0%, 0.0%, 0.0%]
+       Sat value  : 284979
+
+  [16] 1717
+       Categories : environmental protection, health, urban greenery
+       Cost vector: [0, 0, mpfr('1936.373939420447'), mpfr('9021.5159295787016'), 0, 0, 0, mpfr('13372.110131000851')]
+       % of budget: [0.0%, 0.0%, 1.5%, 7.0%, 0.0%, 0.0%, 0.0%, 10.3%]
+       Sat value  : 20161
+
+  [17] 2361
+       Categories : environmental protection, public space, urban greenery
+       Cost vector: [0, 0, mpfr('33490.146887575531'), 0, mpfr('1096.6825446104372'), 0, 0, mpfr('9413.1705678140315')]
+       % of budget: [0.0%, 0.0%, 25.8%, 0.0%, 0.8%, 0.0%, 0.0%, 7.3%]
+       Sat value  : 29086
+
+  [18] 763
+       Categories : public transit and roads
+       Cost vector: [0, 0, 0, 0, 0, mpfr('97000.0'), 0, 0]
+       % of budget: [0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 74.8%, 0.0%, 0.0%]
+       Sat value  : 76109
+
+  [19] 398
+       Categories : public space
+       Cost vector: [0, 0, 0, 0, mpfr('53036.0'), 0, 0, 0]
+       % of budget: [0.0%, 0.0%, 0.0%, 0.0%, 40.9%, 0.0%, 0.0%, 0.0%]
+       Sat value  : 69481
+
+  [20] 2381
+       Categories : culture, public space, public transit and roads
+       Cost vector: [mpfr('15385.265065859721'), 0, 0, 0, mpfr('20934.515010255764'), mpfr('10680.219923884513'), 0, 0]
+       % of budget: [11.9%, 0.0%, 0.0%, 0.0%, 16.1%, 8.2%, 0.0%, 0.0%]
+       Sat value  : 51189
+
+  [21] 243
+       Categories : public space, public transit and roads
+       Cost vector: [0, 0, 0, 0, mpfr('2615.6591019733623'), mpfr('384.3408980266376'), 0, 0]
+       % of budget: [0.0%, 0.0%, 0.0%, 0.0%, 2.0%, 0.3%, 0.0%, 0.0%]
+       Sat value  : 3043
+
+  [22] 2067
+       Categories : culture, public space, sport
+       Cost vector: [mpfr('113016.55988470928'), 0, 0, 0, mpfr('105275.69549763529'), 0, mpfr('766707.74461765541'), 0]
+       % of budget: [87.2%, 0.0%, 0.0%, 0.0%, 81.2%, 0.0%, 591.3%, 0.0%]
+       Sat value  : 1355392
+
+  [23] 2675
+       Categories : culture, education
+       Cost vector: [mpfr('23544.99600897999'), mpfr('1605.0039910200094'), 0, 0, 0, 0, 0, 0]
+       % of budget: [18.2%, 1.2%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%]
+       Sat value  : 22371
+
+  [24] 1224
+       Categories : public transit and roads
+       Cost vector: [0, 0, 0, 0, 0, mpfr('237500.0'), 0, 0]
+       % of budget: [0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 183.2%, 0.0%, 0.0%]
+       Sat value  : 274271
+
+  [25] 260
+       Categories : sport, urban greenery
+       Cost vector: [0, 0, 0, 0, 0, 0, mpfr('37672.996796695661'), mpfr('2977.0032033043362')]
+       % of budget: [0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 29.1%, 2.3%]
+       Sat value  : 19280
+
+--- Voter Profile ---
+  Number of ballots: 2777
+  Vote type        : approval

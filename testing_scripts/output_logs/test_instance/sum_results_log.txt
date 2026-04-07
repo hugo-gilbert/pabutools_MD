@@ -1,0 +1,38 @@
+========================================================================
+RESULTS LOG  [sum]
+Generated: 2026-04-06T23:14:46.603671
+========================================================================
+
+--- Selected Projects (MES Outcome) ---
+  Count: 4 / 5
+
+  • 3
+    Categories : green
+    Cost vector: [mpfr('25.0'), 0]
+    % of budget: [50.0%, 0.0%]
+  • 4
+    Categories : social
+    Cost vector: [0, mpfr('10.0')]
+    % of budget: [0.0%, 20.0%]
+  • 2
+    Categories : social
+    Cost vector: [0, mpfr('15.0')]
+    % of budget: [0.0%, 30.0%]
+  • 5
+    Categories : green, social
+    Cost vector: [mpfr('13.931208874007339'), mpfr('4.0687911259926599')]
+    % of budget: [27.9%, 8.1%]
+
+--- Total Cost of Selected Bundle (per dimension) ---
+  Dim 0 (green): 38.9312 / 50.0000  (77.9% used)
+  Dim 1 (social): 29.0688 / 50.0000  (58.1% used)
+
+--- EJR Audit ---
+  Alpha (max improvement factor): 0.650778
+  Interpretation: Outcome satisfies EJR (alpha <= 1).
+
+  Deviating coalition (voter indices): [0, 2, 5]
+  Deviating bundle (project indices) : [0, 2]
+  Deviating bundle (project names)   : ['3', '2']
+
+  Wall-clock time: 0.00s
