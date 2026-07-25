@@ -103,8 +103,7 @@ def naive_md_mes_with_completion(
     # broadly supported projects are added first.
     candidates = sorted(
         [p for p in instance if p.name not in selected_names and total_sat_map.get(p.name, 0) > 0],
-        key=lambda p: total_sat_map[p.name],
-        reverse=True,
+        key=lambda p: (-total_sat_map[p.name], p.name),
     )
 
     result = BudgetAllocation(mes_result)

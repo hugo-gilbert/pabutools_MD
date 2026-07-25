@@ -374,7 +374,7 @@ def naive_md_mes(
             return res
 
         min_afford = min(affordabilities_projections.values())
-        selected = [p for p in remaining_projects if affordabilities_projections[p] == min_afford][0]
+        selected = min( (p for p in remaining_projects if affordabilities_projections[p] == min_afford), key=lambda p: p.name)
 
         if log:
             log.selection(selected, affordabilities_vectors[selected], min_afford)

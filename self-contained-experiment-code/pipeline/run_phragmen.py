@@ -212,6 +212,9 @@ def run(pb_path: Path, sat_name: str, n_trials: int, output_path: Path,
             sat_values = [sat_value_func(p) for p in project_list]
             rand_values = None
 
+        sat_value_by_name = {p.name: v for p, v in zip(project_list, sat_values)}
+        approval_by_name = {p.name: profile.approval_score(p) for p in project_list}
+
         sat_profile = profile.as_sat_profile(trial_sat_class)
 
         trial_data = {"seed": seed}
@@ -236,10 +239,14 @@ def run(pb_path: Path, sat_name: str, n_trials: int, output_path: Path,
                 ejr_cache[key] = result
                 alpha, _, _ = result
 
+            social_welfare = float(sum(sat_value_by_name[p.name] * approval_by_name[p.name]
+                                       for p in selected))
+
             proj_results[proj_name] = {
                 "alpha":          alpha,
                 "n_selected":     len(selected),
                 "selected_names": [p.name for p in selected],
+                "social_welfare": social_welfare,
             }
             label = "INF" if alpha >= INF_ALPHA else f"alpha={alpha:.3f}"
             print(f"   [{proj_name}] {label}")
@@ -260,6 +267,25 @@ def run(pb_path: Path, sat_name: str, n_trials: int, output_path: Path,
 def _fmt_multiplier(c: float) -> str:
     """Format the budget multiplier for a path component: 2.0 -> '2', 1.5 -> '1.5'."""
     return str(int(c)) if float(c).is_integer() else str(c)
+
+
+# Per-dataset base seed for the "instances_all" datasets: each gets a disjoint
+# block of seeds (multiples of 1000) so no two datasets ever share a seed. When
+# such a dataset is run, seeds start at its base instead of 0, and --start-seed
+# is applied as an offset on top of the base (so --append extends within the
+# block). Datasets not listed here use a base of 0.
+DATASET_START_SEED = {
+    "Poland_Warszawa_2018_Brodno": 0,
+    "Poland_Warszawa_2019_Ochota": 1000,
+    "Poland_Warszawa_2019_Praga-Polnoc": 2000,
+    "Poland_Warszawa_2019_Rejon_Polnocno-Wschodni": 3000,
+    "Poland_Warszawa_2019_Sielce": 4000,
+    "Poland_Warszawa_2019_subunit_Wlochy": 5000,
+    "Poland_Warszawa_2020_Rembertow": 6000,
+    "poland_warszawa_2018_chrzanow-jelonki-polnocne-jelonki-poludniowe": 7000,
+    "poland_warszawa_2018_rakowiec": 8000,
+    "poland_warszawa_2018_saska-kepa": 9000,
+}
 
 
 def main():
@@ -292,7 +318,8 @@ def main():
     output_path = REPO_ROOT / "data" / f"phragmen{suffix}" / args.pb_file.stem / "results.json"
 
     run(args.pb_file, args.sat_class, args.n_trials, output_path,
-        start_seed=args.start_seed, append=args.append,
+        start_seed=DATASET_START_SEED.get(args.pb_file.stem, 0) + args.start_seed,
+        append=args.append,
         budget_multiplier=args.budget_multiplier)
 
 
